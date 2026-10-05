@@ -2,16 +2,6 @@
 
 #include <render.h>
 
-inline Camera3D renderer::getDefaultCam() {
-    return Camera3D {
-        .position={ 5.0f, 5.0f, 0.0f },
-        .target={ 0.0f, 0.0f, 0.0f },
-        .up={ 0.0f, 1.0f, 0.0f },
-        .fovy=45.0f,
-        .projection=CAMERA_PERSPECTIVE,
-    };
-}
-
 void renderer::doMainDrawLoop(Camera3D cam) {
     SetTargetFPS(60);
 
@@ -30,8 +20,11 @@ void renderer::doMainDrawLoop(Camera3D cam) {
         }
         EndDrawing();
     }
+
+    unloadAllModels();
 }
 
 void renderer::generateMeshes() {
-    meshes["pointSphere"] = GenMeshSphere(0.04f, 16, 16);
+    meshes.resize(renderer::meshNames::COUNT);
+    meshes.at(renderer::meshNames::pointSphere) = GenMeshSphere(0.04f, 16, 16);
 }

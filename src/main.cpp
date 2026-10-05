@@ -10,13 +10,28 @@
 #include <render.h>
 
 #define amplitude_threshold 0.001
-#define RESOLUTION 64
+#define RESOLUTION 100
+
+void settupTasks() {
+    Vector3 src = {0, 0, 0};
+
+    // must create the models in memory before doing the draw tasks
+    renderer::generateMeshes();
+
+    Model* pointSphere = renderer::loadTrackedModelFromMesh(renderer::meshes[renderer::meshNames::pointSphere]);
+    std::vector<audioRayLib::packet> packets = audioRayLib::getEqualDistributedPackets(RESOLUTION, src, 1, 1000);
+
+    // settup the tasks
+    renderer::drawTasks3D.push_back([p = std::move(packets), pointSphere]() mutable {
+        drawTasks::drawRayScene(std::move(p), *pointSphere);
+    });
+}
 
 int main() {
-
-    InitWindow(800, 450, "raylib [core] draw ray example");
+    // do this before interacting with anything in raylib
+    InitWindow(800, 450, "Ray Audio Engine");
     
-    std::vector<geometry::quad> roomGeometry = {
+    const std::vector<geometry::quad> roomGeometry = {
         { {100, 100, 100}, {100, 100, -100}, {100, -100, 100}, {100, -100, -100} },
         { {-100, 100, 100}, {-100, 100, -100}, {-100, -100, 100}, {-100, -100, -100} },
         { {100, 100, 100}, {100, 100, -100}, {-100, 100, 100}, {-100, 100, -100} },
@@ -25,19 +40,9 @@ int main() {
         { {100, 100, -100}, {100, -100, -100}, {-100, 100, -100}, {-100, -100, -100} },
     };
 
-    Vector3 vmic = {60, 10, 0};
-    Vector3 src = {0, 0, 0};
+    settupTasks();
 
-    std::vector<audioRayLib::packet> packets = audioRayLib::getEqualDistributedPackets(RESOLUTION, src, 1, 1000);
-
+    // start the rendering process
     Camera3D camera = renderer::getDefaultCam();
-
-    // create meshes/models in memory before drawing
-    renderer::generateMeshes();
-    Model pointSphere = LoadModelFromMesh(renderer::meshes[renderer::meshNames::pointSphere]);
-
-    renderer::drawTasks3D.push_back(std::bind(drawTasks::drawRayScene, packets, pointSphere));
     renderer::doMainDrawLoop(camera);
-
-    UnloadModel(pointSphere);
 }
