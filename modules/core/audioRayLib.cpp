@@ -48,3 +48,13 @@ std::vector<audioRayLib::packet> audioRayLib::getEqualDistributedPackets(int res
 
     return packets;
 }
+
+void audioRayLib::stepPacket(packet& p) {
+    // iterate through 
+}
+
+void audioRayLib::stepAllPackets(std::vector<packet>& packets) {
+    for( auto& p : packets ) {
+        stepPacket(p);
+    }
+}

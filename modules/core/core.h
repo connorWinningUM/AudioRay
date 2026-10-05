@@ -29,6 +29,9 @@ namespace audioRayLib {
     double getAmplitude(double dampingCoefficient, double originalAmplitudeSample, double distTraveled);
     double getPhaseShift(double frequency, double distTraveled, double propogationSpeed);
     std::vector<packet> getEqualDistributedPackets(int resolution, Vector3 srcPosition, double amplitude, double frequency);
+
+    void stepPacket(packet& p);
+    void stepAllPackets(std::vector<packet>& packets);
 }
 
 namespace geometry {
